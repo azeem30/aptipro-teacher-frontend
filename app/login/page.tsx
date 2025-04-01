@@ -36,9 +36,9 @@ export default function LoginPage() {
     setIsSubmitting(true)
   
     try {
-      console.log("Attempting login..."); // Debug log
+      console.log("Attempting login..."); 
       const result = await login(values.email, values.password)
-      console.log("Login result:", result); // Debug log
+      console.log("Login result:", result); 
   
       if (result.success) {
         console.log("Login successful, attempting redirect..."); // Debug log
@@ -56,7 +56,7 @@ export default function LoginPage() {
         })
       }
     } catch (error) {
-      console.error("Login error:", error); // Debug log
+      console.error("Login error:", error); 
       toast({
         variant: "destructive",
         title: "Error",

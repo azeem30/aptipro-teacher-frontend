@@ -20,7 +20,7 @@ type AuthContextType = {
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>
   signup: (userData: Omit<User, "verified"> & { password: string }) => Promise<{ success: boolean; message: string }>
   logout: () => void
-  verifyAccount: (email: string) => Promise<{ success: boolean }>
+  verifyAccount: (email: string) => Promise<{ success: boolean; message: string }>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -62,18 +62,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      const newUser = {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-        department: userData.department,
-        verified: false,
-      }
-
-      const users = JSON.parse(localStorage.getItem("aptipro-users") || "[]")
-      users.push(newUser)
-      localStorage.setItem("aptipro-users", JSON.stringify(users))
-
       return {
         success: true,
         message: data.message || 'Account created successfully. Please verify your email.'
@@ -103,22 +91,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           message: data.message || 'Login failed'
         }
       }
-      const users = JSON.parse(localStorage.getItem("aptipro-users") || "[]")
-      const foundUser = users.find((u: any) => u.email === email)
-      if (!foundUser) {
-        return {
-          success: false,
-          message: 'User not found'
-        }
+
+      const userData = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        department: data.user.department,
+        verified: data.user.verified,
+        subjects: data.user.subjects || [],
+        tests_created: data.user.tests_created || 0,
+        results_analyzed: data.user.results_analyzed || 0
       }
-      const updatedUser = {
-        ...foundUser,
-        subjects: data.user?.subjects || [],
-        tests_created: data.user.tests_created,
-        results_analyzed: data.user.results_analyzed
-      }
-      setUser(updatedUser)
-      localStorage.setItem("aptipro-user", JSON.stringify(updatedUser))
+
+      setUser(userData)
+      localStorage.setItem("aptipro-user", JSON.stringify(userData))
+      
       return {
         success: true,
         message: data.message || 'Login successful'
@@ -160,13 +147,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const updatedUser = { ...user, verified: true };
         setUser(updatedUser);
         localStorage.setItem("aptipro-user", JSON.stringify(updatedUser));
-      }
-
-      const users = JSON.parse(localStorage.getItem("aptipro-users") || "[]");
-      const userIndex = users.findIndex((u: any) => u.email === email);
-      if (userIndex !== -1) {
-        users[userIndex].verified = true;
-        localStorage.setItem("aptipro-users", JSON.stringify(users));
       }
   
       return {
