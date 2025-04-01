@@ -34,16 +34,20 @@ export default function LoginPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true)
-
+  
     try {
+      console.log("Attempting login..."); // Debug log
       const result = await login(values.email, values.password)
-
+      console.log("Login result:", result); // Debug log
+  
       if (result.success) {
+        console.log("Login successful, attempting redirect..."); // Debug log
         toast({
           title: "Login successful",
           description: "Welcome back to AptiPro!",
         })
         router.push("/home")
+        console.log("Redirect should have happened"); // Debug log
       } else {
         toast({
           variant: "destructive",
@@ -52,6 +56,7 @@ export default function LoginPage() {
         })
       }
     } catch (error) {
+      console.error("Login error:", error); // Debug log
       toast({
         variant: "destructive",
         title: "Error",
